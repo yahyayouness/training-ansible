@@ -11,3 +11,5 @@
 - name: include tests
   include_tasks: tests.yml
   tags: tests
+
+- #include_tasks: deploy.yml

@@ -1,0 +1,27 @@
+---
+
+- name: Get currently running application version
+  uri:
+    url: http://localhost:8080/{{ tomcat_app_name }}/version
+    return_content: yes
+  failed_when: false
+  register: tomcat_app_predeploy_version
+
+
+# - name: Set tomcat_app_needs_deploy == true deployment is not needed
+#   set_fact:
+#     tomcat_app_needs_deploy: true
+#   when: tomcat_app_predeploy_version.status != '200' or (tomcat_app_predeploy_version.json.version != '{{ tomcat_app_version }}')
+
+# - name: Set tomcat_app_needs_deploy == false deployment is not needed
+#   set_fact:
+#     tomcat_app_needs_deploy: false
+#   when: tomcat_app_predeploy_version.status == '200' or (tomcat_app_predeploy_version.json.version == '{{ tomcat_app_version }}')
+
+- name: Compute whether deployment is needed
+  set_fact:
+    tomcat_app_needs_deploy: "{{ tomcat_app_predeploy_version.status != 200 or (tomcat_app_predeploy_version.json.version != tomcat_app_version) | ternary ('true', 'false') }}"
+
+# - name: Compute whether deployment is needed
+#   set_fact:
+#     tomcat_app_needs_deploy: tomcat_app_predeploy_version.status != 200 or (tomcat_app_predeploy_version.json.version != '{{ tomcat_app_version }}')
